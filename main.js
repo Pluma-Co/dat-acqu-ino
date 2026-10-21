@@ -10,6 +10,9 @@ const SERVIDOR_PORTA = 3300;
 // habilita ou desabilita a inserção de dados no banco de dados
 const HABILITAR_OPERACAO_INSERIR = true;
 
+// variavel para acumular vazamento do sensor 1
+let vazamento1 = 0;
+
 // função para comunicação serial
 const serial = async (
     valoresSensorAnalogico,
@@ -20,18 +23,23 @@ const serial = async (
         {
             host: 'localhost',
             user: 'user_insert',
-            password: '1234',
+            password: 'User@1234',
             database: 'pluma',
-            port: 3306
+            port: 3307
         }
     ).promise();
 
     // lista as portas seriais disponíveis e procura pelo Arduino
+
     const portas = await serialport.SerialPort.list();
     const portaArduino = portas.find((porta) => porta.vendorId == 2341 && porta.productId == 43);
     if (!portaArduino) {
         throw new Error('O arduino não foi encontrado em nenhuma porta serial');
     }
+
+    // const portaArduino = {
+    //     path: 'COM5'
+    // };
 
     // configura a porta serial com o baud rate especificado
     const arduino = new serialport.SerialPort(
@@ -51,19 +59,54 @@ const serial = async (
         console.log(data);
         const valores = [data];
         const sensorAnalogico = parseFloat(valores[0]);
+        const acrescimoSensor2 = sensorAnalogico + 8;
+        const acrescimoSensor3 = sensorAnalogico + 14; 
 
         // armazena os valores dos sensores nos arrays correspondentes
         valoresSensorAnalogico.push(sensorAnalogico);
-
+        
         // insere os dados no banco de dados (se habilitado)
         if (HABILITAR_OPERACAO_INSERIR) {
 
             // este insert irá inserir os dados na tabela "medida"
+            // Sensor id 1
             await poolBancoDados.execute(
-                'INSERT INTO medicao (medicao) VALUES (?)',
-                [sensorAnalogico]
+                'INSERT INTO medicao (indiceGas, fkSensor) VALUES (?,?)',
+                [sensorAnalogico, 1]
             );
-            console.log("valores inseridos no banco: ", sensorAnalogico);
+
+            // Sensor id 2
+            await poolBancoDados.execute(
+                'INSERT INTO medicao (indiceGas, fkSensor) VALUES (?,?)',
+                [acrescimoSensor2, 2]
+            );
+
+
+            // sensor id 3
+            await poolBancoDados.execute(
+                'INSERT INTO medicao (indiceGas, fkSensor) VALUES (?,?)',
+                [acrescimoSensor3, 3]
+            );
+            
+            console.log("valores inseridos no banco - Sensor 01: ", sensorAnalogico);
+            console.log("valores inseridos no banco - Sensor 02: ", acrescimoSensor2);
+            console.log("valores inseridos no banco - Sensor 03: ", acrescimoSensor3);
+
+            // gravar vazamento total por sensor
+            if (sensorAnalogico > 0) {
+                if (vazamento1 == 0) {
+                    dataInicio = new Date();    
+                }
+                vazamento1 += sensorAnalogico;
+            } else if (vazamento1 > 0) {
+                dataFim = new Date();
+                await poolBancoDados.execute(
+                    'INSERT INTO vazamento (vazamentoTotal, fkSensor, dataInicio, dataFim) VALUES (?,?,?,?)',
+                    [vazamento1, 1, dataInicio, dataFim]
+                );
+                vazamento1 = 0;
+            }
+            
 
         }
 
