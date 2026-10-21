@@ -11,11 +11,11 @@ const SERVIDOR_PORTA = 3300;
 const HABILITAR_OPERACAO_INSERIR = true;
 
 // variavel para acumular vazamento do sensor 1
-let vazamento1 = 0;
+let vazamentoTotalSensor01 = 0;
 
 // função para comunicação serial
 const serial = async (
-    valoresSensorAnalogico,
+    valoresSensorGas01, valoresSensorGas02, valoresSensorGas03,
 ) => {
 
     // conexão com o banco de dados MySQL
@@ -58,12 +58,14 @@ const serial = async (
     arduino.pipe(new serialport.ReadlineParser({ delimiter: '\r\n' })).on('data', async (data) => {
         console.log(data);
         const valores = [data];
-        const sensorAnalogico = parseFloat(valores[0]);
-        const acrescimoSensor2 = sensorAnalogico + 8;
-        const acrescimoSensor3 = sensorAnalogico + 14; 
+        const sensorGas01 = parseFloat(valores[0]);
+        const sensorGas02 = sensorGas01 + 8;
+        const sensorGas03 = sensorGas01 + 14; 
 
         // armazena os valores dos sensores nos arrays correspondentes
-        valoresSensorAnalogico.push(sensorAnalogico);
+        valoresSensorGas01.push(sensorGas01);
+        valoresSensorGas02.push(sensorGas02);
+        valoresSensorGas03.push(sensorGas03);
         
         // insere os dados no banco de dados (se habilitado)
         if (HABILITAR_OPERACAO_INSERIR) {
@@ -72,39 +74,39 @@ const serial = async (
             // Sensor id 1
             await poolBancoDados.execute(
                 'INSERT INTO medicao (indiceGas, fkSensor) VALUES (?,?)',
-                [sensorAnalogico, 1]
+                [sensorGas01, 1]
             );
 
             // Sensor id 2
             await poolBancoDados.execute(
                 'INSERT INTO medicao (indiceGas, fkSensor) VALUES (?,?)',
-                [acrescimoSensor2, 2]
+                [sensorGas02, 2]
             );
 
 
             // sensor id 3
             await poolBancoDados.execute(
                 'INSERT INTO medicao (indiceGas, fkSensor) VALUES (?,?)',
-                [acrescimoSensor3, 3]
+                [sensorGas03, 3]
             );
             
-            console.log("valores inseridos no banco - Sensor 01: ", sensorAnalogico);
-            console.log("valores inseridos no banco - Sensor 02: ", acrescimoSensor2);
-            console.log("valores inseridos no banco - Sensor 03: ", acrescimoSensor3);
+            console.log("valores inseridos no banco - Sensor 01: ", sensorGas01);
+            console.log("valores inseridos no banco - Sensor 02: ", sensorGas02);
+            console.log("valores inseridos no banco - Sensor 03: ", sensorGas03);
 
             // gravar vazamento total por sensor
-            if (sensorAnalogico > 0) {
-                if (vazamento1 == 0) {
+            if (sensorGas01 > 0) {
+                if (vazamentoTotalSensor01 == 0) {
                     dataInicio = new Date();    
                 }
-                vazamento1 += sensorAnalogico;
-            } else if (vazamento1 > 0) {
+                vazamentoTotalSensor01 += sensorGas01;
+            } else if (vazamentoTotalSensor01 > 0) {
                 dataFim = new Date();
                 await poolBancoDados.execute(
                     'INSERT INTO vazamento (vazamentoTotal, fkSensor, dataInicio, dataFim) VALUES (?,?,?,?)',
-                    [vazamento1, 1, dataInicio, dataFim]
+                    [vazamentoTotalSensor01, 1, dataInicio, dataFim]
                 );
-                vazamento1 = 0;
+                vazamentoTotalSensor01 = 0;
             }
             
 
@@ -120,7 +122,7 @@ const serial = async (
 
 // função para criar e configurar o servidor web
 const servidor = (
-    valoresSensorAnalogico
+    valoresSensorGas01, valoresSensorGas02, valoresSensorGas03
 ) => {
     const app = express();
 
@@ -138,22 +140,32 @@ const servidor = (
 
     // define os endpoints da API para cada tipo de sensor
     app.get('/sensores/analogico', (_, response) => {
-        return response.json(valoresSensorAnalogico);
+        return response.json(valoresSensorGas01);
+    });
+
+    app.get('/sensores/sensorGas02', (_, response) => {
+        return response.json(valoresSensorGas02);
+    });
+
+    app.get('/sensores/sensorGas03', (_, response) => {
+        return response.json(valoresSensorGas03);
     });
 }
 
 // função principal assíncrona para iniciar a comunicação serial e o servidor web
 (async () => {
     // arrays para armazenar os valores dos sensores
-    const valoresSensorAnalogico = [];
+    const valoresSensorGas01 = [];
+    const valoresSensorGas02 = [];
+    const valoresSensorGas03 = [];
 
     // inicia a comunicação serial
     await serial(
-        valoresSensorAnalogico,
+        valoresSensorGas01,
     );
 
     // inicia o servidor web
     servidor(
-        valoresSensorAnalogico,
+        valoresSensorGas01,
     );
 })();

@@ -2,20 +2,26 @@
 <html>
 
 <head>
-    <title>Graphics</title>
+    <title>Dashboard Pluma</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
-    <h1>Graphics</h1>
+    <h1 style="text-align: center;">Dashboard Geral - Pluma</h1>
     <div style="display: flex;">
         <div style="width: 50%;">
             <canvas id="sensorAnalogico"></canvas>
         </div>
+        
         <div style="width: 50%;">
-            <canvas id="sensorDigital"></canvas>
+            <canvas id="sensor02"></canvas>
         </div>
+
+        <div style="width: 50%;">
+            <canvas id="sensor03"></canvas>
+        </div>
+
     </div>
 
     <script>
@@ -23,7 +29,7 @@
             type: 'line',
             data: {
                 datasets: [{
-                    label: 'Analogico',
+                    label: 'Sensor 01',
                     borderColor: '#63B1BC',
                     backgroundColor: '#ED145B'
                 }]
@@ -31,12 +37,16 @@
             options: {
                 scales: {
                     x: {
+                        title: {
+                            display: true,
+                            text: 'Leitura'
+                        },
                         beginAtZero: true
                     },
                     y: {
                         title: {
                             display: true,
-                            text: '(%)'
+                            text: 'PPM'
                         },
                         beginAtZero: true,
                     },
@@ -44,28 +54,61 @@
             }
         });
 
-        var sensorDigital = new Chart(document.getElementById('sensorDigital').getContext('2d'), {
+        var sensor02 = new Chart(document.getElementById('sensor02').getContext('2d'), {
             type: 'line',
             data: {
                 datasets: [{
-                    label: 'Digital',
-                    borderColor: '#63B1BC',
-                    backgroundColor: '#0762C8'
+                    label: 'Sensor 02',
+                    borderColor: '#fc7303',
+                    backgroundColor: '#fc7303'
                 }]
             },
             options: {
                 scales: {
                     x: {
+                        title: {
+                            display: true,
+                            text: 'Leitura'
+                        },
                         beginAtZero: true
                     },
                     y: {
                         title: {
                             display: true,
-                            text: '(0-1)'
+                            text: 'PPM'
+                        },
+                        beginAtZero: true,
+                    },
+                },
+            }
+        });
+
+        var sensor03 = new Chart(document.getElementById('sensor03').getContext('2d'), {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Sensor 03',
+                    borderColor: '#4503fc',
+                    backgroundColor: '#4503fc'
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Leitura'
                         },
                         beginAtZero: true
-                    }
-                }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'PPM'
+                        },
+                        beginAtZero: true,
+                    },
+                },
             }
         });
 
