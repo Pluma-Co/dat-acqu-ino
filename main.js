@@ -12,6 +12,14 @@ const HABILITAR_OPERACAO_INSERIR = true;
 
 // variavel para acumular vazamento do sensor 1
 let vazamentoTotalSensor01 = 0;
+let vazamentoTotalSensor02 = 0;
+let vazamentoTotalSensor03 = 0;
+let dataInicio1;
+let dataInicio2;
+let dataInicio3;
+let dataFim1;
+let dataFim2;
+let dataFim3;
 
 // função para comunicação serial
 const serial = async (
@@ -59,9 +67,13 @@ const serial = async (
         console.log(data);
         const valores = [data];
         const sensorGas01 = parseFloat(valores[0]);
-        const sensorGas02 = sensorGas01 + 8;
-        const sensorGas03 = sensorGas01 + 14; 
-
+        const sensorGas02 = 0;
+        const sensorGas03 = 0;
+        if (sensorGas01 > 0) {
+            sensorGas02 = sensorGas01 + 8;
+            sensorGas03 = sensorGas01 + 14;
+        }
+         
         // armazena os valores dos sensores nos arrays correspondentes
         valoresSensorGas01.push(sensorGas01);
         valoresSensorGas02.push(sensorGas02);
@@ -94,21 +106,55 @@ const serial = async (
             console.log("valores inseridos no banco - Sensor 02: ", sensorGas02);
             console.log("valores inseridos no banco - Sensor 03: ", sensorGas03);
 
-            // gravar vazamento total por sensor
+            // gravar vazamento total por sensor\
+            // vazamento sensor 1
             if (sensorGas01 > 0) {
                 if (vazamentoTotalSensor01 == 0) {
-                    dataInicio = new Date();    
+                    dataInicio1 = new Date();    
                 }
                 vazamentoTotalSensor01 += sensorGas01;
             } else if (vazamentoTotalSensor01 > 0) {
-                dataFim = new Date();
+                dataFim1 = new Date();
                 await poolBancoDados.execute(
                     'INSERT INTO vazamento (vazamentoTotal, fkSensor, dataInicio, dataFim) VALUES (?,?,?,?)',
-                    [vazamentoTotalSensor01, 1, dataInicio, dataFim]
+                    [vazamentoTotalSensor01, 1, dataInicio1, dataFim1]
                 );
                 vazamentoTotalSensor01 = 0;
+                console.log("Vazamento sensor 1 registrado");
             }
+
             
+            // vazamento sensor 2
+            if (sensorGas02 > 0) {
+                if (vazamentoTotalSensor02 == 0) {
+                    dataInicio2 = new Date();    
+                }
+                vazamentoTotalSensor02 += sensorGas02;
+            } else if (vazamentoTotalSensor02 > 0) {
+                dataFim2 = new Date();
+                await poolBancoDados.execute(
+                    'INSERT INTO vazamento (vazamentoTotal, fkSensor, dataInicio, dataFim) VALUES (?,?,?,?)',
+                    [vazamentoTotalSensor02, 2, dataInicio2, dataFim2]
+                );
+                vazamentoTotalSensor02 = 0;
+                console.log("Vazamento sensor 2 registrado");
+            }
+
+            // vazamento sensor 3
+            if (sensorGas03 > 0) {
+                if (vazamentoTotalSensor03 == 0) {
+                    dataInicio3 = new Date();    
+                }
+                vazamentoTotalSensor03 += sensorGas03;
+            } else if (vazamentoTotalSensor03 > 0) {
+                dataFim3 = new Date();
+                await poolBancoDados.execute(
+                    'INSERT INTO vazamento (vazamentoTotal, fkSensor, dataInicio, dataFim) VALUES (?,?,?,?)',
+                    [vazamentoTotalSensor03, 3, dataInicio3, dataFim3]
+                );
+                vazamentoTotalSensor03 = 0;
+                console.log("Vazamento sensor 3 registrado");
+            }
 
         }
 
