@@ -67,11 +67,11 @@ const serial = async (
         console.log(data);
         const valores = [data];
         const sensorGas01 = parseFloat(valores[0]);
-        const sensorGas02 = 0;
-        const sensorGas03 = 0;
+        let sensorGas02 = 0;
+        let sensorGas03 = 0;
         if (sensorGas01 > 0) {
-            sensorGas02 = sensorGas01 + 8;
-            sensorGas03 = sensorGas01 + 14;
+            sensorGas02 = sensorGas01 + 300;
+            sensorGas03 = sensorGas01 + 130;
         }
          
         // armazena os valores dos sensores nos arrays correspondentes
@@ -185,7 +185,7 @@ const servidor = (
     });
 
     // define os endpoints da API para cada tipo de sensor
-    app.get('/sensores/analogico', (_, response) => {
+    app.get('/sensores/sensorGas01', (_, response) => {
         return response.json(valoresSensorGas01);
     });
 
@@ -207,11 +207,11 @@ const servidor = (
 
     // inicia a comunicação serial
     await serial(
-        valoresSensorGas01,
+        valoresSensorGas01, valoresSensorGas02, valoresSensorGas03
     );
 
     // inicia o servidor web
     servidor(
-        valoresSensorGas01,
+        valoresSensorGas01, valoresSensorGas02, valoresSensorGas03
     );
 })();

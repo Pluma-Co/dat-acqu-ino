@@ -11,7 +11,7 @@
     <h1 style="text-align: center;">Dashboard Geral - Pluma</h1>
     <div style="display: flex;">
         <div style="width: 50%;">
-            <canvas id="sensorAnalogico"></canvas>
+            <canvas id="sensor01"></canvas>
         </div>
         
         <div style="width: 50%;">
@@ -25,7 +25,7 @@
     </div>
 
     <script>
-        var sensorAnalogico = new Chart(document.getElementById('sensorAnalogico').getContext('2d'), {
+        var sensor01 = new Chart(document.getElementById('sensor01').getContext('2d'), {
             type: 'line',
             data: {
                 datasets: [{
@@ -145,8 +145,9 @@
         }
 
         setInterval(() => {
-            obterDados(sensorAnalogico, 'analogico');
-            obterDados(sensorDigital, 'digital');
+            obterDados(sensor01, 'sensorGas01');
+            obterDados(sensor02, 'sensorGas02');
+            obterDados(sensor03, 'sensorGas03');
         }, 1000);
 
     </script>
