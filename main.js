@@ -70,8 +70,8 @@ const serial = async (
         let sensorGas02 = 0;
         let sensorGas03 = 0;
         if (sensorGas01 > 0) {
-            sensorGas02 = sensorGas01 + 300;
-            sensorGas03 = sensorGas01 + 130;
+            sensorGas02 = (sensorGas01 + Math.random() * 500).toFixed(2);
+            sensorGas03 = (sensorGas01 + Math.random() * 1000).toFixed(2);
         }
          
         // armazena os valores dos sensores nos arrays correspondentes
