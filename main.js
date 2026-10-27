@@ -20,9 +20,9 @@ const serial = async (
         {
             host: 'localhost',
             user: 'user_insert',
-            password: '1234',
+            password: 'User@1234',
             database: 'pluma',
-            port: 3306
+            port: 3307
         }
     ).promise();
 
