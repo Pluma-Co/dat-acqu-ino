@@ -2,90 +2,114 @@
 <html>
 
 <head>
-    <title>Graphics</title>
+    <title>Dashboard Pluma</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
 </head>
 
 <body>
 
-    <h1>Monitoramento Bruto (Tempo Real)</h1>
-    <div style="display: flex;justify-content: space-between;">
-        <div style="width: 32%;">
-            <canvas id="sensorBiodigestor"></canvas>
+    <h1 style="text-align: center;">Dashboard Geral - Pluma</h1>
+    <div style="display: flex;">
+        <div style="width: 50%;">
+            <canvas id="sensor01"></canvas>
         </div>
-        <div style="width: 32%;">
-            <canvas id="sensorPurificacao"></canvas>
+        
+        <div style="width: 50%;">
+            <canvas id="sensor02"></canvas>
         </div>
-        <div style="width: 32%;">
-            <canvas id="sensorCompressor"></canvas>
+
+        <div style="width: 50%;">
+            <canvas id="sensor03"></canvas>
         </div>
+
     </div>
 
     <script>
-        // delimitação de vazamentos
-        const configuracaoEixoY = {
-            title: {
-                display: true,
-                text: 'PPM (Partes por Milhão)'
+        var sensor01 = new Chart(document.getElementById('sensor01').getContext('2d'), {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Sensor 01',
+                    borderColor: '#63B1BC',
+                    backgroundColor: '#ED145B'
+                }]
             },
-            beginAtZero: true,
-            min: 0,
-            max: 10000, // Limite estabelecido para o sensor MQ-4
-            ticks: {
-                stepSize: 2000
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Leitura'
+                        },
+                        beginAtZero: true
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'PPM'
+                        },
+                        beginAtZero: true,
+                    },
+                },
             }
-        };
-        // CRIAR DATASETS   
-        function criarDatasets(nomeSensor, corSensor) {
-            return [
-                {
-                    label: nomeSensor,
-                    borderColor: corSensor,
-                    backgroundColor: corSensor,
-                    data: []
-                },
-                {
-                    label: 'Leve (2000)',
-                    borderColor: '#28A745', // Linha Verde
-                    backgroundColor: '#28A745', // legenda verde 
-                    pointRadius: 0,
-                    data: []
-                },
-                {
-                    label: 'Moderado (6000)',
-                    borderColor: '#FFC107', // Linha amarela
-                    backgroundColor: '#FFC107', // legenda amarela
-                    pointRadius: 0,
-                    data: []
-                },
-                {
-                    label: 'Crítico (10000)',
-                    borderColor: '#DC3545', // linha vermelha
-                    backgroundColor: '#DC3545', // legenda vermelha 
-                    pointRadius: 0,
-                    data: []
-                }
-            ];
-        }
-
-        // os 3 graficos 
-        var chartBiodigestor = new Chart(document.getElementById('sensorBiodigestor').getContext('2d'), {
-            type: 'line',
-            data: {datasets: criarDatasets('Biodigestor', '#ED145B')},
-            options: {scales: {y: configuracaoEixoY}}
         });
 
-        var chartPurificacao = new Chart(document.getElementById('sensorPurificacao').getContext('2d'), {
+        var sensor02 = new Chart(document.getElementById('sensor02').getContext('2d'), {
             type: 'line',
-            data: {datasets: criarDatasets('Purificação', '#0762C8')},
-            options: {scales: {y: configuracaoEixoY}}
+            data: {
+                datasets: [{
+                    label: 'Sensor 02',
+                    borderColor: '#fc7303',
+                    backgroundColor: '#fc7303'
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Leitura'
+                        },
+                        beginAtZero: true
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'PPM'
+                        },
+                        beginAtZero: true,
+                    },
+                },
+            }
         });
 
-        var chartCompressor = new Chart(document.getElementById('sensorCompressor').getContext('2d'), {
+        var sensor03 = new Chart(document.getElementById('sensor03').getContext('2d'), {
             type: 'line',
-            data: {datasets: criarDatasets('Compressor', '#28A745')},
-            options: {scales: {y: configuracaoEixoY}}
+            data: {
+                datasets: [{
+                    label: 'Sensor 03',
+                    borderColor: '#4503fc',
+                    backgroundColor: '#4503fc'
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Leitura'
+                        },
+                        beginAtZero: true
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'PPM'
+                        },
+                        beginAtZero: true,
+                    },
+                },
+            }
         });
 
         var paginacao = {};
@@ -107,19 +131,13 @@
                     valores = valores.slice(ultimaPaginacao);
 
                     valores.forEach((valor) => {
-                        if (grafico.data.labels.length == 10 ) {
+                        if (grafico.data.labels.length == 10 && grafico.data.datasets[0].data.length == 10) {
                             grafico.data.labels.shift();
                             grafico.data.datasets[0].data.shift();
-                            grafico.data.datasets[1].data.shift();
-                            grafico.data.datasets[2].data.shift();
-                            grafico.data.datasets[3].data.shift();
                         }
 
                         grafico.data.labels.push(tempo[endpoint]++);
                         grafico.data.datasets[0].data.push(parseFloat(valor));
-                        grafico.data.datasets[1].data.push(2000);
-                        grafico.data.datasets[2].data.push(5000);
-                        grafico.data.datasets[3].data.push(10000);
                         grafico.update();
                     });
                 })
@@ -127,9 +145,9 @@
         }
 
         setInterval(() => {
-            obterDados(chartBiodigestor, 'biodigestor');
-            obterDados(chartPurificacao, 'purificacao');
-            obterDados(chartCompressor, 'compressor');
+            obterDados(sensor01, 'sensorGas01');
+            obterDados(sensor02, 'sensorGas02');
+            obterDados(sensor03, 'sensorGas03');
         }, 1000);
 
     </script>
