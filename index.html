@@ -4,6 +4,8 @@
 <head>
     <title>Dashboard Pluma</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
 </head>
 
 <body>
@@ -13,7 +15,7 @@
         <div style="width: 50%;">
             <canvas id="sensor01"></canvas>
         </div>
-        
+
         <div style="width: 50%;">
             <canvas id="sensor02"></canvas>
         </div>
@@ -35,6 +37,33 @@
                 }]
             },
             options: {
+                plugins: {
+                    annotation: {
+                        annotations: {
+                            leve: {
+                                type: 'line',
+                                yMin: 501,
+                                yMax: 501,
+                                borderColor: 'green',
+                                borderWidth: 2
+                            },
+                            moderado: {
+                                type: 'line',
+                                yMin: 2001,
+                                yMax: 2001,
+                                borderColor: 'yellow',
+                                borderWidth: 2
+                            },
+                            critico: {
+                                type: 'line',
+                                yMin: 5001,
+                                yMax: 5001,
+                                borderColor: 'red',
+                                borderWidth: 2
+                            }
+                        }
+                    }
+                },
                 scales: {
                     x: {
                         title: {
@@ -64,6 +93,33 @@
                 }]
             },
             options: {
+                plugins: {
+                    annotation: {
+                        annotations: {
+                            leve: {
+                                type: 'line',
+                                yMin: 501,
+                                yMax: 501,
+                                borderColor: 'green',
+                                borderWidth: 2
+                            },
+                            moderado: {
+                                type: 'line',
+                                yMin: 2001,
+                                yMax: 2001,
+                                borderColor: 'yellow',
+                                borderWidth: 2
+                            },
+                            critico: {
+                                type: 'line',
+                                yMin: 5001,
+                                yMax: 5001,
+                                borderColor: 'red',
+                                borderWidth: 2
+                            }
+                        }
+                    }
+                },
                 scales: {
                     x: {
                         title: {
@@ -93,6 +149,33 @@
                 }]
             },
             options: {
+                plugins: {
+                    annotation: {
+                        annotations: {
+                            leve: {
+                                type: 'line',
+                                yMin: 501,
+                                yMax: 501,
+                                borderColor: 'green',
+                                borderWidth: 2
+                            },
+                            moderado: {
+                                type: 'line',
+                                yMin: 2001,
+                                yMax: 2001,
+                                borderColor: 'yellow',
+                                borderWidth: 2
+                            },
+                            critico: {
+                                type: 'line',
+                                yMin: 5001,
+                                yMax: 5001,
+                                borderColor: 'red',
+                                borderWidth: 2
+                            }
+                        }
+                    }
+                },
                 scales: {
                     x: {
                         title: {
